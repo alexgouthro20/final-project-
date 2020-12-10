@@ -1,0 +1,67 @@
+```{r}
+news="female"
+newb=32.45
+newc=0
+newsmo="yes"
+newr="northeast"
+newchar=4000
+age=c(insurance$age,newa)
+sex=c(insurance$sex,news)
+bmi=c(insurance$bmi,newb)
+children=c(insurance$children,newc)
+smoker=c(insurance$smoker,newsmo)
+region=c(insurance$region,newr)
+charges=c(insurance$charges,newchar)
+mod=lm(charges~age+sex+bmi+children+smoker+region)
+summary(mod)
+anova(mod)
+par(mfrow=c(3,1))
+#checking relationship with bmi 
+plot(bmi,charges,main="Relationship Between BMI and Cost of Medical Insurance",xlab="BMI")
+newbmi1=(1/bmi)
+plot(newbmi1,charges,main="Relationship Between Inverse of BMI and Cost of Medical Insurance",xlab="Inverse of BMI",sub="1/BMI")
+newbmi2=(log(bmi))
+plot(newbmi2,charges,main="Relationship Between Log of BMI and Cost of Medical Insurance ",xlab="log of BMI",sub="log(BMI)")
+#checking relationship with age 
+par(mfrow=c(3,1))
+plot(age,charges,main="Relationship Between Age and Cost of Medical Insurance",xlab="AGE")
+age1=(1/age)
+plot(age1,charges,main="Relationship Between Inverse of Age and Cost of Medical Insurance",xlab="Inverse of Age",sub="1/AGE")
+age2=log(age)
+plot(age2,charges,main="Relationship between Log of Age and Cost of Medical Insurance",xlab="log of age",sub="log(AGE)")
+#checking relationship with children
+plot(children,charges,main="Relationship Between Number of Children and Cost of Medical Insurance",xlab="number of children")
+#checking relationship with region
+boxplot(charges~region,main="Effect of Location on Medical Insurance Costs",cex=0.75,xlab="Region")
+#checking relationship with smoker
+boxplot(charges~smoker,main="Effect of Smoking on Medical Insurance Costs",xlab="Does the Participant Smoke")
+#checking relationship with sex 
+boxplot(charges~sex,main="Effect of Participants Gender on Their Medical Insurance Costs",xlab="Gender")
+mod1=lm(charges~age+bmi+children)
+anova(mod1)
+car::vif(mod1)
+step(lm(charges~1),direction = "forward",scope=~age+sex+bmi+children+smoker+region)
+step(lm(charges~age+sex+bmi+children+smoker+region),direction = "backward",scope=~age+sex+bmi+children+smoker+region)
+step(lm(charges~1),direction ="both",scope=~age+sex+bmi+children+smoker+region)
+mod2=lm(charges~age+smoker+bmi+children)
+esresids=rstudent(mod2)  #externally standardized residuals 
+par(mfrow=c(2,1))
+qqnorm(esresids,main="normal QQ plot of externally standardized residuals")
+plot(fitted(mod2),esresids,xlab="fitted values",ylab="ext stand resids", main="externally standardized residuals vs fitted values")
+plot(mod2)
+car::vif(mod2)
+residtable<-cbind(resid(mod2),rstandard(mod2), rstudent(mod2))
+residtable[1301,]
+residtable[578,]
+residtable[544,]
+residtable[243,]
+charges1=charges[-c(1301,578,544,243)]
+age1=age[-c(1301,578,544,243)]
+smoker1=smoker[-c(1301,578,544,243)]
+bmi1=bmi[-c(1301,578,544,243)]
+children1=children[-c(1301,578,544,243)]
+mod3=lm(charges1~age1+smoker1+bmi1+children1)
+plot(mod3)
+anova(mod2)
+anova(mod3)
+```

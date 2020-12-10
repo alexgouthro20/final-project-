@@ -1,0 +1,185 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+library(readr)
+insurance=read_csv("C:/Users/alex_/Documents/THIRD YEAR/STAT 3340/insurance.csv")
+```
+  Medial insurance is an expense that will occur in most individuals' lifetime. Medical insurance is a necessity for a person's well being. This study is important because it shows how human habits can impact an important expense that a person may or may not be able to afford.  There are copious factors which determine the price of medical insurance for a given individual. The goal of this study is to analyse the relationship between given factors and their effect on the price of their medical insurance.This study will be focusing on the factors; age,sex,BMI (body mass index),number of children, smoker (yes or no) and region (northeast, northwest, southwest and southeast). The goal can be achieved through conducting a linear regression. The goal will aid in determining what factors influence how much an individual is charged
+
+
+  This study will investigate the most influential factor of how much an individual will be charged for medical insurance.The study will conduct a regression analysis to detect the influential factor. The research will examine the influential leverage points of the given data. This will help detect the most influential point of the data. In context of the data, the influential point/points determines which of the 6 factors controls the price of medical insurance the most. Secondly, the study will focus on correlation and covariance. This will aid the analysis by detecting if the data contains multicollinearity. If the data contains multicollinearity it will impact how to further conduct the study. Furthermore, this study will assess if  any of the current variables need to be eliminated from the analysis. This will create a more accurate interpretation of the conclusion. By carrying out these steps, the study can determine if the hypothesis can either be rejected or not. 
+  
+  The first step conducted was adding an additional data point to the existing data. The point chosen was a 20 year old smoker with no children, has a BMI of 32.45,located in the northeast and identifies as female. This point was specifically chosen because it relates with the groups own personal data. Therefore, the group can examine how our own lives impact how much insurance companies will charge us for medical expenses. This step was completed before the study could proceed to analyse the data.
+```{r}
+newa=20
+news="female"
+newb=32.45
+newc=0
+newsmo="yes"
+newr="northeast"
+newchar=4000
+age=c(insurance$age,newa)
+sex=c(insurance$sex,news)
+bmi=c(insurance$bmi,newb)
+children=c(insurance$children,newc)
+smoker=c(insurance$smoker,newsmo)
+region=c(insurance$region,newr)
+charges=c(insurance$charges,newchar)
+```
+  The second step is to create a linear model for the data which now includes an additional point. By running a summary of the model it shows that the following factors have small P-values: age,bmi,children,smoker(yes and no) and individuals located in the southeast region. Since they  have small p-values the current assumption is that these factors are relevant and therefore should remain in the model. Another assumption is that these factors may be influential on the response variable (charge). The last assumption made was that the model is fitted well to the data because the Multiple R-Squared is fairly large. 
+``` {r}
+mod=lm(charges~age+sex+bmi+children+smoker+region)
+summary(mod)
+
+```
+  Furthermore, an analysis of variance was done on the linear model. This particular analysis shows that only the factors age,sex,bmi,number of children and smoker(yes and no) are relevant on influencing the response variable. By examining the P-value of southeast (0.14), it shows that this factor is no longer relevant to the model. This change of assumption can be derived from the P-value of southeast in the summary (0.049). The P-value was significantly close to the cutoff of 0.05, therefore a change from a T-test to an F-test can alter how to interrupt this variable. Consequently this factor (region) is not a substantial influence on the response variable. 
+``` {r}
+anova(mod)
+```
+    The creation of individual scatter plots of the variables (BMI,age and number of children) against charges, assesses the linearity of each factor against the response variable. 
+
+  The data fans slightly outwards. There is a very slight linear relationship present when BMI becomes larger and charges are increased. Observe that at the most dense area of the plot charges are below $2000, and does not present a linear relationship. The group attempted to transform the data to observe if a better linear fit was acheivable. However, when 1/BMI and log(BMI) were run, there was not a significant change in the data. It can be concluded that there is not a strong linear relationship between BMI and charges. However, since a small linear relationship is present it can be inferred that BMI and another variable together may cause a stronger linear relationship against charges. 
+```{r echo=FALSE}
+par(mfrow=c(3,1))
+#checking relationship with bmi 
+plot(bmi,charges,main="Relationship Between BMI and Cost of Medical Insurance",xlab="BMI")
+newbmi1=(1/bmi)
+plot(newbmi1,charges,main="Relationship Between Inverse of BMI and Cost of Medical Insurance",xlab="Inverse of BMI",sub="1/BMI")
+newbmi2=(log(bmi))
+plot(newbmi2,charges,main="Relationship Between Log of BMI and Cost of Medical Insurance ",xlab="log of BMI",sub="log(BMI)")
+```
+
+  There is a clear, strong linear relationship between age and  charges. There is a fairly straight, dense line on the bottom that shows charges increase as age increases. Two more fairly linear lines above the bottom, most dense line can also be observed. These lines are linear with age but they may be higher due to another factor influencing their charges. These factors could include smoker, kids, sex or region and would need to be  investigated futher. 
+```{r echo=FALSE}
+#checking relationship with age 
+par(mfrow=c(3,1))
+plot(age,charges,main="Relationship Between Age and Cost of Medical Insurance",xlab="AGE")
+age1=(1/age)
+plot(age1,charges,main="Relationship Between Inverse of Age and Cost of Medical Insurance",xlab="Inverse of Age",sub="1/AGE")
+age2=log(age)
+plot(age2,charges,main="Relationship between Log of Age and Cost of Medical Insurance",xlab="log of age",sub="log(AGE)")
+```
+  The graph appears to show that the fewer children a person has, the higher insurance companies may charge. Looking into more detail of the graph, most of the people included in the data do not have children, therefore most of them would fall in the line at 0, so it would most likely have the largest spread, it can be observed that under the $3000 range it is the most densely populated. It is worth noting that the people with 3 or 4 children have a noticeably smaller charge than people with 0, 1, 2 or even 3 children.
+``` {r}
+#checking relationship with children
+plot(children,charges,main="Relationship Between Number of Children and Cost of Medical Insurance",xlab="number of children")
+```
+  When looking at a region, all the means are almost the exact same. This may show that there is no real influence on charges. It is worth noting that the south-east region has the most spread, so this may be why it came up as relevant when the summary of our model was run.
+```{r}
+#checking relationship with region
+boxplot(charges~region,main="Effect of Location on Medical Insurance Costs",cex=0.75,xlab="Region")
+```
+  There is a very obvious, strong relationship between charges and if someone is a smoker. The mean is significantly larger, and overall the entire plot sits much higher than those who don’t smoke. There are many more outliers for those who don’t smoke, meaning that there could be other factors influencing their charges. By looking at this plot we can confidently infer that If a person smokes they will likely have a much higher charge than if they do not. 
+```{r}
+#checking relationship with smoking
+boxplot(charges~smoker,main="Effect of Smoking on Medical Insurance Costs",xlab="Does the Participant Smoke")
+```
+  Looking at this plot, It can be seen that sex does not seem to have a significant influence on charges. Their means are relatively similar, it can be noted that females have more outliers than males, and males have a larger spread than females. 
+```{r}
+#checking relationship with sex 
+boxplot(charges~sex,main="Effect of Participants Gender on Their Medical Insurance Costs",xlab="Gender")
+```
+  Aside from smoking, many of the variables do not have an extreme relationship when compared to charges. It was possible to identify small relationships between each variable vs charge, but let it be noted that smoking has such a large influence on charge, this is most likely to be the cause that interrupts the variables from having a strong linear relationship with the charges. There will need to be more investigation to determine if all of the variables influence the charges or if we can remove some of the variables to better fit what influences the model.
+
+
+  Since the data contains categorical variables such as smoker (yes or no), the group proceeded to analyse the model with solely numerical data. To detect if there is any multicollinearity between any of the variables, we calculated the variance inflation factors (VIFs). The VIFs were determined to be too low to suggest that there was any multicollinearity evident in our data. 
+``` {r}
+mod1=lm(charges~age+bmi+children)
+anova(mod1)
+car::vif(mod1)
+```
+
+  To determine the model of best fit, the group evaluated which factors had the largest influence on the response variable. This was done by running a forward selection, backward elimination and stepwise regression. From these analyses it shows that only age,smoker,BMI and number of children should be included to obtain a best fit model. Therefore, the factors sex and region will no longer be included in the model.Any further analysis will be done using only the model of best fit. 
+```{r}
+step(lm(charges~1),direction = "forward",scope=~age+sex+bmi+children+smoker+region)
+step(lm(charges~age+sex+bmi+children+smoker+region),direction = "backward",scope=~age+sex+bmi+children+smoker+region)
+step(lm(charges~1),direction ="both",scope=~age+sex+bmi+children+smoker+region)
+```
+
+  The next step was to run an analysis of variance (ANOVA) of the model of best fit. It displayed that each variable of this new model was significant. The Akaike information criterion (AIC) decreased by approximately 2000 which demonstrates that the newly fitted model is a more accurate representation of the data. The model was also examined for any multicollinearity by calculating the VIF. The result of the VIF calculation was that there is no multicollinearity present in the new model.   
+
+```{r}
+mod2=lm(charges~age+smoker+bmi+children)
+esresids=rstudent(mod2)  #externally standardized residuals 
+par(mfrow=c(2,1))
+qqnorm(esresids,main="normal QQ plot of externally standardized residuals")
+plot(fitted(mod2),esresids,xlab="fitted values",ylab="ext stand resids",       main="externally standardized residuals vs fitted values")
+plot(mod2)
+car::vif(mod2)
+```
+  An analysis of a residual table was done to identify leverage points in the data.The table presents some potential outliers such as 1301,578 and 243. The Cook’s Distance shows the potential leverage points 1301,578 and 544. 
+```{r}
+residtable<-cbind(resid(mod2),rstandard(mod2), rstudent(mod2))
+```
+  Further investigation of the leverage points was to remove each significant point of the residual table. This was done to determine why the points are significant in influencing the response variable. By removing the leverage points it was determined that the residuals are negative or significantly larger  compared to better fit data points. Continuing this analysis is to test if removal of these points will make the data easier to use or if it will be too insignificant to keep in the data
+```{r}
+residtable[1301,]
+residtable[578,]
+residtable[544,]
+residtable[243,]
+```
+  when the leverage points were removed it concluded that the new model (mod3) was very similar to the original model (mod2). This confirms that the leverage are not influential enough to be removed from the data. 
+``` {r}
+charges1=charges[-c(1301,578,544,243)]
+age1=age[-c(1301,578,544,243)]
+smoker1=smoker[-c(1301,578,544,243)]
+bmi1=bmi[-c(1301,578,544,243)]
+children1=children[-c(1301,578,544,243)]
+mod3=lm(charges1~age1+smoker1+bmi1+children1)
+plot(mod3)
+anova(mod2)
+anova(mod3)
+```
+
+```{r,echo=FALSE}
+plot(bmi,charges,main="Relationship Between BMI and Cost of Medical Insurance",xlab="BMI")
+newbmi1=(1/bmi)
+plot(newbmi1,charges,main="Relationship Between Inverse of BMI and Cost of Medical Insurance",xlab="Inverse of BMI",sub="1/BMI")
+newbmi2=(log(bmi))
+plot(newbmi2,charges,main="Relationship Between Log of BMI and Cost of Medical Insurance ",xlab="log of BMI",sub="log(BMI)")
+#checking relationship with age 
+par(mfrow=c(3,1))
+plot(age,charges,main="Relationship Between Age and Cost of Medical Insurance",xlab="AGE")
+age1=(1/age)
+plot(age1,charges,main="Relationship Between Inverse of Age and Cost of Medical Insurance",xlab="Inverse of Age",sub="1/AGE")
+age2=log(age)
+plot(age2,charges,main="Relationship between Log of Age and Cost of Medical Insurance",xlab="log of age",sub="log(AGE)")
+#checking relationship with children
+plot(children,charges,main="Relationship Between Number of Children and Cost of Medical Insurance",xlab="number of children")
+#checking relationship with region
+boxplot(charges~region,main="Effect of Location on Medical Insurance Costs",cex=0.75,xlab="Region")
+#checking relationship with smoker
+boxplot(charges~smoker,main="Effect of Smoking on Medical Insurance Costs",xlab="Does the Participant Smoke")
+#checking relationship with sex 
+boxplot(charges~sex,main="Effect of Participants Gender on Their Medical Insurance Costs",xlab="Gender")
+plot(mod)
+plot(mod2)
+
+```
